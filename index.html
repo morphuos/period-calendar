@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>تقویم</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root{
+    --bg:var(--tg-theme-bg-color,#fff); --text:var(--tg-theme-text-color,#1b1b1f);
+    --hint:var(--tg-theme-hint-color,#8a8a93); --card:var(--tg-theme-secondary-bg-color,#f4f2f6);
+    --btn:var(--tg-theme-button-color,#d6336c); --btnt:var(--tg-theme-button-text-color,#fff);
+    --red:#e5486e; --redSoft:rgba(229,72,110,.16); --blue:rgba(80,140,230,.18);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Tahoma,sans-serif;font-size:15px;padding:14px 14px 30px}
+  .card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:14px}
+  .big{font-size:22px;font-weight:700;margin:2px 0 6px}
+  .hint{color:var(--hint);font-size:13px}
+  .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .nav button{background:none;border:0;color:var(--text);font-size:24px;width:40px;height:40px;border-radius:50%}
+  .nav b{font-size:17px}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+  .wd{color:var(--hint);font-size:12px;padding-bottom:4px}
+  .day{position:relative;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;border:2px solid transparent}
+  .day.period{background:var(--red);color:#fff;font-weight:700}
+  .day.pred{border:2px dashed var(--red);color:var(--red)}
+  .day.fert{background:var(--blue)}
+  .day.today{box-shadow:0 0 0 2px var(--text) inset}
+  .day .dot{position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7}
+  .day.period .dot{background:#fff}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px;color:var(--hint)}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-2px;margin-left:5px}
+  .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-end;z-index:5}
+  .sheet{background:var(--bg);width:100%;border-radius:20px 20px 0 0;padding:18px 16px 26px;max-height:85vh;overflow:auto}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+  .chip{border:1.5px solid var(--hint);background:none;color:var(--text);border-radius:20px;padding:8px 12px;font-size:14px;font-family:inherit}
+  .chip.on{background:var(--btn);border-color:var(--btn);color:var(--btnt)}
+  .mood .chip{font-size:22px;padding:4px 10px}
+  .btn{display:block;width:100%;border:0;border-radius:14px;padding:13px;font-size:15px;font-family:inherit;font-weight:600;margin-top:8px;background:var(--btn);color:var(--btnt)}
+  .btn.ghost{background:var(--card);color:var(--text)}
+  .btn.danger{background:none;color:var(--red)}
+  input[type=text]{width:100%;padding:11px;border-radius:12px;border:1.5px solid var(--card);background:var(--card);color:var(--text);font-family:inherit;font-size:14px}
+  h3{margin:0 0 4px} label{font-weight:600;font-size:14px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<div class="sheet-bg" id="bg"><div class="sheet" id="sheet"></div></div>
+
+<script>
+const tg = window.Telegram && Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+
+// ---------- داده‌ها از لینک ----------
+function decode(s){
+  s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '=';
+  const bytes = Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+let D = null;
+try { const q = new URLSearchParams(location.search).get('d'); if (q) D = decode(q); } catch(e) {}
+
+// ---------- تاریخ ----------
+const toMs = s => Date.parse(s + 'T00:00:00Z');
+const addDays = (s,n) => new Date(toMs(s) + n*864e5).toISOString().slice(0,10);
+const diff = (a,b) => Math.round((toMs(b)-toMs(a))/864e5);
+const todayIso = new Date().toLocaleDateString('en-CA');
+const faNum = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const jFmt = new Intl.DateTimeFormat('en-u-ca-persian-nu-latn',{year:'numeric',month:'numeric',day:'numeric',timeZone:'UTC'});
+function jp(iso){ const o={}; for (const x of jFmt.formatToParts(new Date(toMs(iso)))) if (x.type!=='literal') o[x.type]=parseInt(x.value); return o; }
+const monthTitle = iso => new Intl.DateTimeFormat('fa-IR-u-ca-persian',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(toMs(iso)));
+const longDate = iso => new Intl.DateTimeFormat('fa-IR-u-ca-persian',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(toMs(iso)));
+const gregDate = iso => new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(toMs(iso)));
+const monthStart = iso => addDays(iso, -(jp(iso).day - 1));
+
+// ---------- محاسبه‌ی روزها ----------
+const isHer = D && D.r === 'her';
+const periods = D ? D.p.map(([s,e]) => ({s, e})) : [];
+const cycle = D ? D.c : 28, plen = D ? D.l : 5;
+const periodDays = new Map(); // تاریخ ← تاریخ شروع اون پریود
+for (const p of periods){
+  const end = p.e || addDays(p.s, Math.min(plen, Math.max(1, diff(p.s, todayIso) + 1)) - 1);
+  for (let d = p.s; d <= end; d = addDays(d,1)) periodDays.set(d, p.s);
+}
+const predDays = new Set(), fertDays = new Set();
+const last = periods.length ? periods[periods.length-1] : null;
+let nextStart = null;
+if (last){
+  nextStart = addDays(last.s, cycle);
+  for (let k = 0; k < 4; k++){
+    const ns = addDays(last.s, cycle*(k+1));
+    for (let i = 0; i < plen; i++){ const d = addDays(ns,i); if (!periodDays.has(d) && d >= todayIso) predDays.add(d); }
+    const ov = addDays(ns, -14);
+    for (let i = -5; i <= 1; i++){ const d = addDays(ov,i); if (!periodDays.has(d)) fertDays.add(d); }
+  }
+}
+
+// ---------- صفحه ----------
+let cur = monthStart(todayIso);
+const app = document.getElementById('app');
+
+function statusCard(){
+  if (!D) return `<div class="card"><div class="big">از داخل بات بازش کن</div><div class="hint">این صفحه باید از دکمه‌ی «📅 تقویم» توی بات باز بشه.</div></div>`;
+  if (!isHer && !D.sh[0]) return `<div class="card"><div class="big">اشتراک خاموشه</div><div class="hint">${D.n} فعلاً اشتراک تاریخ‌ها رو خاموش کرده.</div></div>`;
+  if (!last) return `<div class="card"><div class="big">هنوز چیزی ثبت نشده</div><div class="hint">${isHer ? 'روی روز شروع آخرین پریودت توی تقویم بزن.' : 'وقتی '+D.n+' اولین پریود رو ثبت کنه، اینجا نشون داده میشه.'}</div></div>`;
+  let big, sub = '';
+  const pd = periodDays.get(todayIso);
+  if (pd){ big = `روز ${faNum(diff(pd, todayIso)+1)} پریود`; }
+  else {
+    const n = diff(todayIso, nextStart);
+    big = n > 0 ? `${faNum(n)} روز تا پریود بعدی` : n === 0 ? 'پریود از امروز ممکنه شروع بشه' : `${faNum(-n)} روز از پیش‌بینی گذشته`;
+    sub = 'حدود ' + longDate(nextStart);
+  }
+  return `<div class="card">${isHer ? '' : `<div class="hint">${D.n}</div>`}<div class="big">${big}</div>
+    <div class="hint">${sub}${sub?' · ':''}سیکل ${faNum(cycle)} روزه · پریود ${faNum(plen)} روزه</div></div>`;
+}
+
+function calendar(){
+  if (!D || (!isHer && !D.sh[0])) return '';
+  const first = cur; const dow = (new Date(toMs(first)).getUTCDay() + 1) % 7; // شنبه = ۰
+  let cells = ['ش','ی','د','س','چ','پ','ج'].map(w => `<div class="wd">${w}</div>`).join('');
+  for (let i = 0; i < dow; i++) cells += '<div></div>';
+  const m = jp(first).month;
+  for (let d = first; jp(d).month === m; d = addDays(d,1)){
+    const cls = ['day'];
+    if (periodDays.has(d)) cls.push('period'); else if (predDays.has(d)) cls.push('pred'); else if (fertDays.has(d)) cls.push('fert');
+    if (d === todayIso) cls.push('today');
+    const dot = D.sy[d] ? '<span class="dot"></span>' : '';
+    cells += `<div class="${cls.join(' ')}" onclick="openDay('${d}')">${faNum(jp(d).day)}${dot}</div>`;
+  }
+  return `<div class="card">
+    <div class="nav"><button onclick="move(-1)">›</button><b>${monthTitle(first)}</b><button onclick="move(1)">‹</button></div>
+    <div class="grid">${cells}</div>
+    <div class="legend"><span><i style="background:var(--red)"></i>پریود</span><span><i style="border:2px dashed var(--red)"></i>پیش‌بینی</span><span><i style="background:var(--blue)"></i>تخمک‌گذاری (تخمینی)</span><span><i style="background:var(--hint);width:6px;height:6px"></i>علائم ثبت‌شده</span></div>
+  </div>
+  <div class="hint" style="text-align:center">${isHer ? 'روی هر روز بزن تا ثبتش کنی' : 'روی هر روز بزن تا جزئیاتش رو ببینی'} · بروزرسانی: ${new Date(D.t).toLocaleString('fa-IR',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'long'})}</div>`;
+}
+
+function render(){ app.innerHTML = statusCard() + calendar(); }
+function move(k){ cur = k < 0 ? monthStart(addDays(cur,-1)) : monthStart(addDays(cur,31)); render(); }
+
+// ---------- جزئیات روز ----------
+const PAIN = ['بدون درد','کم','متوسط','زیاد'], MOOD = ['😢','😕','😐','🙂','😄'], ENERGY = ['خیلی کم','کم','معمولی','خوب'];
+let sel = null;
+const bg = document.getElementById('bg'), sheet = document.getElementById('sheet');
+bg.onclick = e => { if (e.target === bg) closeSheet(); };
+function closeSheet(){ bg.style.display = 'none'; }
+
+function openDay(d){
+  const v = D.sy[d] || [null,null,null,''];
+  sel = { d, v: [...v] };
+  const inPeriod = periodDays.get(d);
+  let h = `<h3>${longDate(d)}</h3><div class="hint">${gregDate(d)}${inPeriod ? ' · روز '+faNum(diff(inPeriod,d)+1)+' پریود' : predDays.has(d) ? ' · پیش‌بینی پریود' : fertDays.has(d) ? ' · احتمال تخمک‌گذاری (تخمینی، برای پیشگیری قابل اتکا نیست)' : ''}</div>`;
+  if (!isHer){
+    h += D.sh[1] ? (D.sy[d] ? `<p>${symLine(v)}</p>` : `<p class="hint">برای این روز علائمی ثبت نشده.</p>`)
+                 : `<p class="hint">اشتراک علائم خاموشه.</p>`;
+    h += `<button class="btn ghost" onclick="closeSheet()">بستن</button>`;
+  } else {
+    const future = d > todayIso;
+    if (!future){
+      if (!inPeriod) h += `<button class="btn" onclick="act('start')">🩸 پریود این روز شروع شد</button>`;
+      if (inPeriod) h += `<button class="btn ghost" onclick="act('end')">✅ پریود این روز تموم شد</button>`;
+      if (inPeriod) h += `<button class="btn danger" onclick="act('del','${inPeriod}')">حذف این پریود</button>`;
+      h += `<hr style="border:0;border-top:1px solid var(--card);margin:16px 0">
+        <label>درد</label><div class="row" id="r0">${PAIN.map((t,i)=>chip(0,i,t)).join('')}</div>
+        <label>مود</label><div class="row mood" id="r1">${MOOD.map((t,i)=>chip(1,i,t)).join('')}</div>
+        <label>انرژی</label><div class="row" id="r2">${ENERGY.map((t,i)=>chip(2,i,t)).join('')}</div>
+        <input type="text" id="note" maxlength="80" placeholder="یادداشت (اختیاری)" value="${(v[3]||'').replace(/"/g,'&quot;')}">
+        <button class="btn" onclick="saveSym()">ذخیره‌ی حال این روز</button>`;
+    } else h += `<p class="hint">برای روزهای آینده نمیشه چیزی ثبت کرد.</p>`;
+    h += `<button class="btn ghost" onclick="closeSheet()">بستن</button>`;
+  }
+  sheet.innerHTML = h; bg.style.display = 'flex';
+}
+function chip(k,i,t){ return `<button class="chip ${sel.v[k]===i?'on':''}" onclick="pick(${k},${i},this)">${t}</button>`; }
+function pick(k,i,el){
+  sel.v[k] = sel.v[k] === i ? null : i;
+  [...el.parentNode.children].forEach((c,j) => c.classList.toggle('on', sel.v[k] === j));
+}
+function symLine(v){
+  const p = [];
+  if (v[0]!=null) p.push('درد: '+PAIN[v[0]]);
+  if (v[1]!=null) p.push('مود: '+MOOD[v[1]]);
+  if (v[2]!=null) p.push('انرژی: '+ENERGY[v[2]]);
+  if (v[3]) p.push('«'+v[3]+'»');
+  return p.join(' · ');
+}
+function sendToBot(obj){
+  if (tg && tg.sendData) { try { tg.sendData(JSON.stringify(obj)); return; } catch(e){} }
+  alert('این کار فقط وقتی کار می‌کنه که تقویم از دکمه‌ی پایین بات باز شده باشه.');
+}
+function act(a, start){ sendToBot({ a, d: a === 'del' ? start : sel.d }); }
+function saveSym(){ sel.v[3] = document.getElementById('note').value.trim(); sendToBot({ a:'sym', d: sel.d, v: sel.v }); }
+
+render();
+</script>
+</body>
+</html>
