@@ -2,62 +2,120 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>تقویم</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>تقویم 🌸</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 <style>
   :root{
-    --bg:var(--tg-theme-bg-color,#fff); --text:var(--tg-theme-text-color,#1b1b1f);
-    --hint:var(--tg-theme-hint-color,#8a8a93); --card:var(--tg-theme-secondary-bg-color,#f4f2f6);
-    --btn:var(--tg-theme-button-color,#d6336c); --btnt:var(--tg-theme-button-text-color,#fff);
-    --red:#e5486e; --redSoft:rgba(229,72,110,.16); --blue:rgba(80,140,230,.18);
+    --bg1:#fff5f8; --bg2:#f6eeff; --ink:#4a2c40; --soft:#9b7a90; --card:rgba(255,255,255,.78);
+    --rose:#ff6f9c; --rose2:#ff9ec0; --roseSoft:#ffe1ec; --lav:#c9b3ff; --lavSoft:#efe7ff;
+    --line:rgba(255,111,156,.18); --shadow:0 8px 28px rgba(214,95,140,.14);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg1:#2a1b26; --bg2:#231a33; --ink:#fbe9f2; --soft:#c6a9bb; --card:rgba(60,38,55,.72);
+      --roseSoft:#5a2c42; --lavSoft:#3b2f5a; --line:rgba(255,158,192,.18); --shadow:0 8px 28px rgba(0,0,0,.3); }
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Tahoma,sans-serif;font-size:15px;padding:14px 14px 30px}
-  .card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:14px}
-  .big{font-size:22px;font-weight:700;margin:2px 0 6px}
-  .hint{color:var(--hint);font-size:13px}
-  .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-  .nav button{background:none;border:0;color:var(--text);font-size:24px;width:40px;height:40px;border-radius:50%}
+  html,body{margin:0;min-height:100%}
+  body{font-family:Vazirmatn,system-ui,Tahoma,sans-serif;color:var(--ink);font-size:15px;
+    background:radial-gradient(120% 60% at 100% 0%,var(--roseSoft) 0%,transparent 60%),
+               radial-gradient(100% 50% at 0% 100%,var(--lavSoft) 0%,transparent 60%),
+               linear-gradient(160deg,var(--bg1),var(--bg2));
+    background-attachment:fixed;padding:18px 16px 40px;overflow-x:hidden}
+  .float{position:fixed;font-size:18px;opacity:.22;pointer-events:none;animation:drift 14s ease-in-out infinite}
+  @keyframes drift{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-18px) rotate(12deg)}}
+
+  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .hello{font-size:21px;font-weight:800}
+  .today{color:var(--soft);font-size:13px;margin-top:2px}
+  .badge{background:var(--card);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--soft);box-shadow:var(--shadow)}
+
+  .card{background:var(--card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid var(--line);border-radius:26px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+
+  .hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 18px}
+  .ring{position:relative;width:200px;height:200px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring .num{font-size:44px;font-weight:900;line-height:1;background:linear-gradient(135deg,var(--rose),#b37dff);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .ring .lbl{font-size:13px;color:var(--soft);margin-top:4px}
+  .phase{display:inline-flex;gap:6px;align-items:center;margin-top:14px;padding:7px 14px;border-radius:30px;
+    background:var(--roseSoft);font-weight:700;font-size:14px}
+  .phase.lav{background:var(--lavSoft)}
+  .next{margin-top:10px;font-size:16px;font-weight:700}
+  .sub{color:var(--soft);font-size:13px;margin-top:3px}
+
+  .note{display:flex;gap:12px;align-items:flex-start}
+  .note .ico{font-size:26px;line-height:1}
+  .note p{margin:0;line-height:1.8}
+  .note small{display:block;color:var(--soft);margin-top:4px}
+
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .act{border:0;border-radius:20px;padding:14px 10px;font:inherit;font-weight:700;font-size:14px;color:#fff;
+    background:linear-gradient(135deg,var(--rose),var(--rose2));box-shadow:0 6px 18px rgba(255,111,156,.35)}
+  .act.alt{background:linear-gradient(135deg,#b48cff,var(--lav));box-shadow:0 6px 18px rgba(180,140,255,.35)}
+  .act:active{transform:scale(.97)}
+
+  .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .nav button{background:var(--roseSoft);border:0;color:var(--ink);font-size:20px;width:38px;height:38px;border-radius:50%}
   .nav b{font-size:17px}
-  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
-  .wd{color:var(--hint);font-size:12px;padding-bottom:4px}
-  .day{position:relative;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;border:2px solid transparent}
-  .day.period{background:var(--red);color:#fff;font-weight:700}
-  .day.pred{border:2px dashed var(--red);color:var(--red)}
-  .day.fert{background:var(--blue)}
-  .day.today{box-shadow:0 0 0 2px var(--text) inset}
-  .day .dot{position:absolute;bottom:4px;width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7}
-  .day.period .dot{background:#fff}
-  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px;color:var(--hint)}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+  .wd{color:var(--soft);font-size:12px;padding-bottom:4px;font-weight:700}
+  .day{position:relative;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:14px;font-weight:600;cursor:pointer;transition:transform .15s}
+  .day:active{transform:scale(.9)}
+  .day.period{background:linear-gradient(135deg,var(--rose),var(--rose2));color:#fff;box-shadow:0 4px 10px rgba(255,111,156,.35)}
+  .day.pred{border:2px dashed var(--rose);color:var(--rose)}
+  .day.fert{background:var(--lavSoft)}
+  .day.today{outline:2.5px solid var(--ink);outline-offset:2px}
+  .day .dot{position:absolute;bottom:3px;font-size:8px;line-height:1}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;font-size:12px;color:var(--soft)}
   .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-2px;margin-left:5px}
-  .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-end;z-index:5}
-  .sheet{background:var(--bg);width:100%;border-radius:20px 20px 0 0;padding:18px 16px 26px;max-height:85vh;overflow:auto}
-  .row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
-  .chip{border:1.5px solid var(--hint);background:none;color:var(--text);border-radius:20px;padding:8px 12px;font-size:14px;font-family:inherit}
-  .chip.on{background:var(--btn);border-color:var(--btn);color:var(--btnt)}
-  .mood .chip{font-size:22px;padding:4px 10px}
-  .btn{display:block;width:100%;border:0;border-radius:14px;padding:13px;font-size:15px;font-family:inherit;font-weight:600;margin-top:8px;background:var(--btn);color:var(--btnt)}
-  .btn.ghost{background:var(--card);color:var(--text)}
-  .btn.danger{background:none;color:var(--red)}
-  input[type=text]{width:100%;padding:11px;border-radius:12px;border:1.5px solid var(--card);background:var(--card);color:var(--text);font-family:inherit;font-size:14px}
-  h3{margin:0 0 4px} label{font-weight:600;font-size:14px}
+  .foot{text-align:center;color:var(--soft);font-size:12px;margin-top:6px}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+  .stats div{background:var(--roseSoft);border-radius:18px;padding:10px 4px}
+  .stats b{display:block;font-size:20px}
+  .stats span{font-size:11px;color:var(--soft)}
+
+  .sheet-bg{position:fixed;inset:0;background:rgba(74,44,64,.35);display:none;align-items:flex-end;z-index:5;backdrop-filter:blur(3px)}
+  .sheet{background:linear-gradient(180deg,var(--bg1),var(--bg2));width:100%;border-radius:28px 28px 0 0;padding:10px 18px 30px;
+    max-height:88vh;overflow:auto;animation:up .25s ease-out}
+  @keyframes up{from{transform:translateY(40px);opacity:0}}
+  .grab{width:44px;height:5px;border-radius:5px;background:var(--line);margin:4px auto 14px}
+  .sheet h3{margin:0;font-size:18px}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 16px}
+  .chip{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:8px 14px;font:inherit;font-size:14px}
+  .chip.on{background:linear-gradient(135deg,var(--rose),var(--rose2));border-color:transparent;color:#fff}
+  .mood .chip{font-size:24px;padding:4px 10px;border-radius:50%}
+  .btn{display:block;width:100%;border:0;border-radius:18px;padding:14px;font:inherit;font-size:15px;font-weight:700;margin-top:10px;
+    color:#fff;background:linear-gradient(135deg,var(--rose),var(--rose2))}
+  .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+  .btn.danger{background:none;color:var(--rose)}
+  input[type=text]{width:100%;padding:12px 14px;border-radius:16px;border:1.5px solid var(--line);background:var(--card);
+    color:var(--ink);font:inherit;font-size:14px;outline:none}
+  label{font-weight:700;font-size:14px}
+  hr{border:0;border-top:1px dashed var(--line);margin:18px 0}
 </style>
 </head>
 <body>
-<div id="app"></div>
+<span class="float" style="top:8%;left:6%">🌸</span>
+<span class="float" style="top:38%;right:4%;animation-delay:-4s">✨</span>
+<span class="float" style="top:70%;left:10%;animation-delay:-8s">💗</span>
+<span class="float" style="top:88%;right:14%;animation-delay:-2s">🦋</span>
 
+<div id="app"></div>
 <div class="sheet-bg" id="bg"><div class="sheet" id="sheet"></div></div>
 
 <script>
 const tg = window.Telegram && Telegram.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
+if (tg) { tg.ready(); tg.expand(); try{ tg.setHeaderColor('#fff5f8'); tg.setBackgroundColor('#fff5f8'); }catch(e){} }
 
-// ---------- داده‌ها از لینک ----------
 function decode(s){
   s = s.replace(/-/g,'+').replace(/_/g,'/'); while (s.length % 4) s += '=';
-  const bytes = Uint8Array.from(atob(s), c => c.charCodeAt(0));
-  return JSON.parse(new TextDecoder().decode(bytes));
+  return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(s), c => c.charCodeAt(0))));
 }
 let D = null;
 try { const q = new URLSearchParams(location.search).get('d'); if (q) D = decode(q); } catch(e) {}
@@ -66,22 +124,28 @@ try { const q = new URLSearchParams(location.search).get('d'); if (q) D = decode
 const toMs = s => Date.parse(s + 'T00:00:00Z');
 const addDays = (s,n) => new Date(toMs(s) + n*864e5).toISOString().slice(0,10);
 const diff = (a,b) => Math.round((toMs(b)-toMs(a))/864e5);
-const todayIso = new Date().toLocaleDateString('en-CA');
-const faNum = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const T = new Date().toLocaleDateString('en-CA');
+const fa = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 const jFmt = new Intl.DateTimeFormat('en-u-ca-persian-nu-latn',{year:'numeric',month:'numeric',day:'numeric',timeZone:'UTC'});
 function jp(iso){ const o={}; for (const x of jFmt.formatToParts(new Date(toMs(iso)))) if (x.type!=='literal') o[x.type]=parseInt(x.value); return o; }
-const monthTitle = iso => new Intl.DateTimeFormat('fa-IR-u-ca-persian',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(toMs(iso)));
-const longDate = iso => new Intl.DateTimeFormat('fa-IR-u-ca-persian',{weekday:'long',day:'numeric',month:'long',timeZone:'UTC'}).format(new Date(toMs(iso)));
-const gregDate = iso => new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(toMs(iso)));
+const F = (iso,opt) => new Intl.DateTimeFormat('fa-IR-u-ca-persian',{...opt,timeZone:'UTC'}).format(new Date(toMs(iso)));
+const monthTitle = iso => F(iso,{month:'long',year:'numeric'});
+const longDate = iso => F(iso,{weekday:'long',day:'numeric',month:'long'});
+const shortDate = iso => F(iso,{day:'numeric',month:'long'});
+const greg = iso => new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(toMs(iso)));
 const monthStart = iso => addDays(iso, -(jp(iso).day - 1));
 
-// ---------- محاسبه‌ی روزها ----------
+// ---------- محاسبه ----------
 const isHer = D && D.r === 'her';
+const herName = (D && D.n) || 'عزیزم';
+const myName = (D && D.m) || '';
 const periods = D ? D.p.map(([s,e]) => ({s, e})) : [];
 const cycle = D ? D.c : 28, plen = D ? D.l : 5;
-const periodDays = new Map(); // تاریخ ← تاریخ شروع اون پریود
+const canSee = D && (isHer || D.sh[0]);
+
+const periodDays = new Map();
 for (const p of periods){
-  const end = p.e || addDays(p.s, Math.min(plen, Math.max(1, diff(p.s, todayIso) + 1)) - 1);
+  const end = p.e || addDays(p.s, Math.min(plen, Math.max(1, diff(p.s, T) + 1)) - 1);
   for (let d = p.s; d <= end; d = addDays(d,1)) periodDays.set(d, p.s);
 }
 const predDays = new Set(), fertDays = new Set();
@@ -91,108 +155,181 @@ if (last){
   nextStart = addDays(last.s, cycle);
   for (let k = 0; k < 4; k++){
     const ns = addDays(last.s, cycle*(k+1));
-    for (let i = 0; i < plen; i++){ const d = addDays(ns,i); if (!periodDays.has(d) && d >= todayIso) predDays.add(d); }
+    for (let i = 0; i < plen; i++){ const d = addDays(ns,i); if (!periodDays.has(d) && d >= T) predDays.add(d); }
     const ov = addDays(ns, -14);
     for (let i = -5; i <= 1; i++){ const d = addDays(ov,i); if (!periodDays.has(d)) fertDays.add(d); }
   }
 }
 
-// ---------- صفحه ----------
-let cur = monthStart(todayIso);
+function phaseOf(){
+  if (!last) return null;
+  const cd = diff(last.s, T) + 1;
+  if (periodDays.has(T)) return { cd, key:'period', name:'پریود', emo:'🩸', lav:false };
+  const ov = cycle - 14;
+  if (cd > cycle) return { cd, key:'late', name:'نزدیک پریود', emo:'⏳', lav:false };
+  if (cd >= ov-5 && cd <= ov+1) return { cd, key:'fert', name:'روزهای باروری (تخمینی)', emo:'🦋', lav:true };
+  if (cd < ov-5) return { cd, key:'foll', name:'فاز فولیکولار', emo:'🌱', lav:true };
+  return { cd, key:'lut', name:'فاز لوتئال', emo:'🌙', lav:false };
+}
+
+const NOTES_HER = {
+  period:['این روزا فقط استراحت کن، بقیه‌اش با من 💗','یه چای داغ و یه پتوی نرم حقته امروز ☕','می‌دونم سخته، ولی تو از همه قوی‌تری 🌷'],
+  foll:['انرژیت داره برمی‌گرده، بدرخش ✨','امروز روز خوبیه برای کارای دوست‌داشتنی 🌼','لبخندت از اینجا هم معلومه 😊'],
+  fert:['امروز هم مثل همیشه خوشگلی 🦋','حواست به خودت باشه، دوستت دارم 💕'],
+  lut:['اگه حوصله نداری، اشکال نداره. با خودت مهربون باش 🌙','یه کم شکلات مجازه، قول میدم 🍫','هر وقت خواستی حرف بزنی، من هستم 💌'],
+  late:['هر چی شد، من کنارتم 🤍','آروم باش، همه‌چی خوبه 🌸'],
+  none:['خوش اومدی به تقویم خودت 🌸','از اینجا به بعد خودم حواسم به این روزا هست 💗']
+};
+const TIPS = {
+  period:'گرما، آب کافی و استراحت معمولاً کمک می‌کنه.',
+  foll:'معمولاً انرژی و حال بهتری داری.',
+  fert:'تخمینیه و برای پیشگیری قابل اتکا نیست.',
+  lut:'ممکنه خسته‌تر یا حساس‌تر باشی، طبیعیه.',
+  late:'گاهی چند روز جابه‌جایی طبیعیه.'
+};
+const pick = arr => arr[Math.floor((toMs(T)/864e5)) % arr.length];
+
+// ---------- ظاهر ----------
+let cur = monthStart(T);
 const app = document.getElementById('app');
 
-function statusCard(){
-  if (!D) return `<div class="card"><div class="big">از داخل بات بازش کن</div><div class="hint">این صفحه باید از دکمه‌ی «📅 تقویم» توی بات باز بشه.</div></div>`;
-  if (!isHer && !D.sh[0]) return `<div class="card"><div class="big">اشتراک خاموشه</div><div class="hint">${D.n} فعلاً اشتراک تاریخ‌ها رو خاموش کرده.</div></div>`;
-  if (!last) return `<div class="card"><div class="big">هنوز چیزی ثبت نشده</div><div class="hint">${isHer ? 'روی روز شروع آخرین پریودت توی تقویم بزن.' : 'وقتی '+D.n+' اولین پریود رو ثبت کنه، اینجا نشون داده میشه.'}</div></div>`;
-  let big, sub = '';
-  const pd = periodDays.get(todayIso);
-  if (pd){ big = `روز ${faNum(diff(pd, todayIso)+1)} پریود`; }
-  else {
-    const n = diff(todayIso, nextStart);
-    big = n > 0 ? `${faNum(n)} روز تا پریود بعدی` : n === 0 ? 'پریود از امروز ممکنه شروع بشه' : `${faNum(-n)} روز از پیش‌بینی گذشته`;
-    sub = 'حدود ' + longDate(nextStart);
-  }
-  return `<div class="card">${isHer ? '' : `<div class="hint">${D.n}</div>`}<div class="big">${big}</div>
-    <div class="hint">${sub}${sub?' · ':''}سیکل ${faNum(cycle)} روزه · پریود ${faNum(plen)} روزه</div></div>`;
+function header(){
+  const hi = !D ? 'سلام 🌸' : isHer ? `سلام ${herName} 🌸` : `تقویم ${herName} 💗`;
+  return `<header><div><div class="hello">${hi}</div><div class="today">${longDate(T)}</div></div>
+    ${D ? `<div class="badge">${isHer ? 'فقط برای تو' : 'فقط دیدنی 👀'}</div>` : ''}</header>`;
+}
+
+function hero(){
+  if (!D) return `<div class="card hero"><div style="font-size:48px">🌸</div><div class="next">از داخل بات بازش کن</div><div class="sub">این صفحه باید با دکمه‌ی «📅 تقویم» توی بات باز بشه.</div></div>`;
+  if (!canSee) return `<div class="card hero"><div style="font-size:48px">🔒</div><div class="next">اشتراک خاموشه</div><div class="sub">${herName} فعلاً اشتراک تاریخ‌ها رو خاموش کرده.</div></div>`;
+  if (!last) return `<div class="card hero"><div style="font-size:48px">🌷</div><div class="next">هنوز چیزی ثبت نشده</div><div class="sub">${isHer ? 'روی روز شروع آخرین پریودت توی تقویم پایین بزن.' : 'وقتی '+herName+' اولین پریود رو ثبت کنه، اینجا نشون داده میشه.'}</div></div>`;
+
+  const ph = phaseOf();
+  const R = 86, C = 2*Math.PI*R, prog = Math.min(1, ph.cd / cycle);
+  let next;
+  if (ph.key === 'period') next = `روز ${fa(diff(periodDays.get(T),T)+1)} پریود`;
+  else { const n = diff(T, nextStart); next = n > 0 ? `${fa(n)} روز تا پریود بعدی` : n === 0 ? 'پریود از امروز ممکنه شروع بشه' : `${fa(-n)} روز از پیش‌بینی گذشته`; }
+  return `<div class="card hero">
+    <div class="ring">
+      <svg width="200" height="200" viewBox="0 0 200 200">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff6f9c"/><stop offset="1" stop-color="#b37dff"/></linearGradient></defs>
+        <circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--roseSoft)" stroke-width="14"/>
+        <circle cx="100" cy="100" r="${R}" fill="none" stroke="url(#g)" stroke-width="14" stroke-linecap="round"
+          stroke-dasharray="${C}" stroke-dashoffset="${C*(1-prog)}" style="transition:stroke-dashoffset 1s"/>
+      </svg>
+      <div class="center"><div class="num">${fa(ph.cd)}</div><div class="lbl">روز از سیکل ${fa(cycle)} روزه</div></div>
+    </div>
+    <div class="phase ${ph.lav?'lav':''}">${ph.emo} ${ph.name}</div>
+    <div class="next">${next}</div>
+    <div class="sub">${ph.key==='period' ? '' : 'حدود '+longDate(nextStart)+' · '}${TIPS[ph.key]}</div>
+  </div>`;
+}
+
+function note(){
+  if (!D || !isHer) return '';
+  const ph = phaseOf(); const k = ph ? ph.key : 'none';
+  return `<div class="card note"><div class="ico">💌</div><div><p>${pick(NOTES_HER[k])}</p>${myName ? `<small>— ${myName}</small>` : ''}</div></div>`;
+}
+
+function actions(){
+  if (!isHer) return '';
+  const inP = periodDays.has(T);
+  return `<div class="actions">
+    ${inP ? `<button class="act alt" onclick="quick('end')">✅ امروز تموم شد</button>` : `<button class="act" onclick="quick('start')">🩸 امروز شروع شد</button>`}
+    <button class="act alt" onclick="openDay('${T}')">📝 حال امروزم</button>
+  </div>`;
 }
 
 function calendar(){
-  if (!D || (!isHer && !D.sh[0])) return '';
-  const first = cur; const dow = (new Date(toMs(first)).getUTCDay() + 1) % 7; // شنبه = ۰
+  if (!canSee) return '';
+  const first = cur, dow = (new Date(toMs(first)).getUTCDay() + 1) % 7;
   let cells = ['ش','ی','د','س','چ','پ','ج'].map(w => `<div class="wd">${w}</div>`).join('');
   for (let i = 0; i < dow; i++) cells += '<div></div>';
   const m = jp(first).month;
   for (let d = first; jp(d).month === m; d = addDays(d,1)){
     const cls = ['day'];
     if (periodDays.has(d)) cls.push('period'); else if (predDays.has(d)) cls.push('pred'); else if (fertDays.has(d)) cls.push('fert');
-    if (d === todayIso) cls.push('today');
-    const dot = D.sy[d] ? '<span class="dot"></span>' : '';
-    cells += `<div class="${cls.join(' ')}" onclick="openDay('${d}')">${faNum(jp(d).day)}${dot}</div>`;
+    if (d === T) cls.push('today');
+    const dot = D.sy[d] ? `<span class="dot">${D.sy[d][1]!=null ? '💗' : '•'}</span>` : '';
+    cells += `<div class="${cls.join(' ')}" onclick="openDay('${d}')">${fa(jp(d).day)}${dot}</div>`;
   }
   return `<div class="card">
     <div class="nav"><button onclick="move(-1)">›</button><b>${monthTitle(first)}</b><button onclick="move(1)">‹</button></div>
     <div class="grid">${cells}</div>
-    <div class="legend"><span><i style="background:var(--red)"></i>پریود</span><span><i style="border:2px dashed var(--red)"></i>پیش‌بینی</span><span><i style="background:var(--blue)"></i>تخمک‌گذاری (تخمینی)</span><span><i style="background:var(--hint);width:6px;height:6px"></i>علائم ثبت‌شده</span></div>
-  </div>
-  <div class="hint" style="text-align:center">${isHer ? 'روی هر روز بزن تا ثبتش کنی' : 'روی هر روز بزن تا جزئیاتش رو ببینی'} · بروزرسانی: ${new Date(D.t).toLocaleString('fa-IR',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'long'})}</div>`;
+    <div class="legend"><span><i style="background:linear-gradient(135deg,#ff6f9c,#ff9ec0)"></i>پریود</span><span><i style="border:2px dashed #ff6f9c"></i>پیش‌بینی</span><span><i style="background:var(--lavSoft)"></i>باروری (تخمینی)</span><span>💗 حال ثبت‌شده</span></div>
+  </div>`;
 }
 
-function render(){ app.innerHTML = statusCard() + calendar(); }
+function stats(){
+  if (!canSee || !last) return '';
+  return `<div class="card stats">
+    <div><b>${fa(cycle)}</b><span>میانگین سیکل</span></div>
+    <div><b>${fa(plen)}</b><span>طول پریود</span></div>
+    <div><b>${fa(periods.length)}</b><span>پریود ثبت‌شده</span></div>
+  </div>
+  <div class="foot">${isHer ? 'روی هر روز بزن تا ثبتش کنی 🌷' : 'روی هر روز بزن تا جزئیاتش رو ببینی'} · بروزرسانی ${new Date(D.t).toLocaleString('fa-IR',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'long'})}</div>`;
+}
+
+function render(){ app.innerHTML = header() + hero() + note() + actions() + calendar() + stats(); }
 function move(k){ cur = k < 0 ? monthStart(addDays(cur,-1)) : monthStart(addDays(cur,31)); render(); }
 
 // ---------- جزئیات روز ----------
-const PAIN = ['بدون درد','کم','متوسط','زیاد'], MOOD = ['😢','😕','😐','🙂','😄'], ENERGY = ['خیلی کم','کم','معمولی','خوب'];
+const PAIN = ['بدون درد','کم','متوسط','زیاد'], MOOD = ['😢','😕','😐','🙂','🥰'], ENERGY = ['خیلی کم','کم','معمولی','پرانرژی'];
 let sel = null;
 const bg = document.getElementById('bg'), sheet = document.getElementById('sheet');
 bg.onclick = e => { if (e.target === bg) closeSheet(); };
 function closeSheet(){ bg.style.display = 'none'; }
 
 function openDay(d){
+  if (!D) return;
   const v = D.sy[d] || [null,null,null,''];
   sel = { d, v: [...v] };
-  const inPeriod = periodDays.get(d);
-  let h = `<h3>${longDate(d)}</h3><div class="hint">${gregDate(d)}${inPeriod ? ' · روز '+faNum(diff(inPeriod,d)+1)+' پریود' : predDays.has(d) ? ' · پیش‌بینی پریود' : fertDays.has(d) ? ' · احتمال تخمک‌گذاری (تخمینی، برای پیشگیری قابل اتکا نیست)' : ''}</div>`;
+  const inP = periodDays.get(d);
+  let h = `<div class="grab"></div><h3>${longDate(d)}</h3><div class="sub">${greg(d)}${inP ? ' · روز '+fa(diff(inP,d)+1)+' پریود 🩸' : predDays.has(d) ? ' · پیش‌بینی پریود' : fertDays.has(d) ? ' · باروری (تخمینی) 🦋' : ''}</div>`;
   if (!isHer){
-    h += D.sh[1] ? (D.sy[d] ? `<p>${symLine(v)}</p>` : `<p class="hint">برای این روز علائمی ثبت نشده.</p>`)
-                 : `<p class="hint">اشتراک علائم خاموشه.</p>`;
+    h += D.sh[1] ? (D.sy[d] ? `<div class="card" style="margin-top:14px">${symLine(v)}</div>` : `<p class="sub" style="margin-top:14px">برای این روز حالی ثبت نشده.</p>`)
+                 : `<p class="sub" style="margin-top:14px">اشتراک حال و علائم خاموشه 🔒</p>`;
     h += `<button class="btn ghost" onclick="closeSheet()">بستن</button>`;
+  } else if (d > T){
+    h += `<p class="sub" style="margin-top:14px">برای روزهای آینده نمیشه چیزی ثبت کرد 🌙</p><button class="btn ghost" onclick="closeSheet()">بستن</button>`;
   } else {
-    const future = d > todayIso;
-    if (!future){
-      if (!inPeriod) h += `<button class="btn" onclick="act('start')">🩸 پریود این روز شروع شد</button>`;
-      if (inPeriod) h += `<button class="btn ghost" onclick="act('end')">✅ پریود این روز تموم شد</button>`;
-      if (inPeriod) h += `<button class="btn danger" onclick="act('del','${inPeriod}')">حذف این پریود</button>`;
-      h += `<hr style="border:0;border-top:1px solid var(--card);margin:16px 0">
-        <label>درد</label><div class="row" id="r0">${PAIN.map((t,i)=>chip(0,i,t)).join('')}</div>
-        <label>مود</label><div class="row mood" id="r1">${MOOD.map((t,i)=>chip(1,i,t)).join('')}</div>
-        <label>انرژی</label><div class="row" id="r2">${ENERGY.map((t,i)=>chip(2,i,t)).join('')}</div>
-        <input type="text" id="note" maxlength="80" placeholder="یادداشت (اختیاری)" value="${(v[3]||'').replace(/"/g,'&quot;')}">
-        <button class="btn" onclick="saveSym()">ذخیره‌ی حال این روز</button>`;
-    } else h += `<p class="hint">برای روزهای آینده نمیشه چیزی ثبت کرد.</p>`;
-    h += `<button class="btn ghost" onclick="closeSheet()">بستن</button>`;
+    if (!inP) h += `<button class="btn" onclick="act('start')">🩸 پریودم این روز شروع شد</button>`;
+    else {
+      h += `<button class="btn" style="background:linear-gradient(135deg,#b48cff,#c9b3ff)" onclick="act('end')">✅ پریودم این روز تموم شد</button>`;
+      h += `<button class="btn danger" onclick="act('del','${inP}')">حذف این پریود</button>`;
+    }
+    h += `<hr>
+      <label>درد</label><div class="row">${PAIN.map((t,i)=>chip(0,i,t)).join('')}</div>
+      <label>حالت چطوره؟</label><div class="row mood">${MOOD.map((t,i)=>chip(1,i,t)).join('')}</div>
+      <label>انرژی</label><div class="row">${ENERGY.map((t,i)=>chip(2,i,t)).join('')}</div>
+      <input type="text" id="note" maxlength="80" placeholder="یه یادداشت کوچیک… (اختیاری)" value="${(v[3]||'').replace(/"/g,'&quot;')}">
+      <button class="btn" onclick="saveSym()">ذخیره 💗</button>
+      <button class="btn ghost" onclick="closeSheet()">بستن</button>`;
   }
   sheet.innerHTML = h; bg.style.display = 'flex';
 }
-function chip(k,i,t){ return `<button class="chip ${sel.v[k]===i?'on':''}" onclick="pick(${k},${i},this)">${t}</button>`; }
-function pick(k,i,el){
+function chip(k,i,t){ return `<button class="chip ${sel.v[k]===i?'on':''}" onclick="tap(${k},${i},this)">${t}</button>`; }
+function tap(k,i,el){
   sel.v[k] = sel.v[k] === i ? null : i;
   [...el.parentNode.children].forEach((c,j) => c.classList.toggle('on', sel.v[k] === j));
+  try{ tg.HapticFeedback.selectionChanged(); }catch(e){}
 }
 function symLine(v){
   const p = [];
   if (v[0]!=null) p.push('درد: '+PAIN[v[0]]);
-  if (v[1]!=null) p.push('مود: '+MOOD[v[1]]);
+  if (v[1]!=null) p.push('حال: '+MOOD[v[1]]);
   if (v[2]!=null) p.push('انرژی: '+ENERGY[v[2]]);
   if (v[3]) p.push('«'+v[3]+'»');
   return p.join(' · ');
 }
-function sendToBot(obj){
+function send(obj){
+  try{ tg.HapticFeedback.notificationOccurred('success'); }catch(e){}
   if (tg && tg.sendData) { try { tg.sendData(JSON.stringify(obj)); return; } catch(e){} }
   alert('این کار فقط وقتی کار می‌کنه که تقویم از دکمه‌ی پایین بات باز شده باشه.');
 }
-function act(a, start){ sendToBot({ a, d: a === 'del' ? start : sel.d }); }
-function saveSym(){ sel.v[3] = document.getElementById('note').value.trim(); sendToBot({ a:'sym', d: sel.d, v: sel.v }); }
+function quick(a){ send({ a, d: T }); }
+function act(a, start){ send({ a, d: a === 'del' ? start : sel.d }); }
+function saveSym(){ sel.v[3] = document.getElementById('note').value.trim(); send({ a:'sym', d: sel.d, v: sel.v }); }
 
 render();
 </script>
