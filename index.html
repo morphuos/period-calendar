@@ -189,6 +189,7 @@ const TIPS = {
   lut:'ممکنه خسته‌تر یا حساس‌تر باشی، طبیعیه.',
   late:'گاهی چند روز جابه‌جایی طبیعیه.'
 };
+const esc = t => String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pick = arr => arr[Math.floor((toMs(T)/864e5)) % arr.length];
 
 // ---------- ظاهر ----------
@@ -230,7 +231,8 @@ function hero(){
 function note(){
   if (!D || !isHer) return '';
   const ph = phaseOf(); const k = ph ? ph.key : 'none';
-  return `<div class="card note"><div class="ico">💌</div><div><p>${pick(NOTES_HER[k])}</p>${myName ? `<small>— ${myName}</small>` : ''}</div></div>`;
+  const msg = D.no ? esc(D.no) : pick(NOTES_HER[k]);
+  return `<div class="card note"><div class="ico">💌</div><div><p>${msg}</p>${myName ? `<small>— ${myName}</small>` : ''}</div></div>`;
 }
 
 function actions(){
@@ -321,7 +323,7 @@ function symLine(v){
   if (v[0]!=null) p.push('درد: '+PAIN[v[0]]);
   if (v[1]!=null) p.push('حال: '+MOOD[v[1]]);
   if (v[2]!=null) p.push('انرژی: '+ENERGY[v[2]]);
-  if (v[3]) p.push('«'+v[3]+'»');
+  if (v[3]) p.push('«'+esc(v[3])+'»');
   return p.join(' · ');
 }
 function send(obj){
